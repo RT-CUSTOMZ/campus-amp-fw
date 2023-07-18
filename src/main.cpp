@@ -7,6 +7,8 @@
 PortExpander *portExpander;
 Touchpanel *touchpanel;
 
+volatile bool change = false;
+
 void setup() {
   uint8_t state = LOW;
 
@@ -27,24 +29,29 @@ void setup() {
   Serial.println("Setup Peripherals done");
 
   portExpander->setPortPin(PortExpanderPin::kPinBtPause, LOW);
+
+  touchpanel->attachChangeCallback([]() {
+    change = true;
+  });
 }
 
 void loop() {
-
-  if (touchpanel->isKeyPressed(TouchpanelKey::kKeyPower)) {
-    Serial.println("Power");
-  } else if(touchpanel->isKeyPressed(TouchpanelKey::kKeyAnalogExt)) {
-    Serial.println("Analog Ext");
-    portExpander->setPortPin(PortExpanderPin::kPinSelectAnalog, HIGH);
-  } else if(touchpanel->isKeyPressed(TouchpanelKey::kKeyAnalogInt)) {
-    Serial.println("Analog Int");
-    portExpander->setPortPin(PortExpanderPin::kPinLedAnalogInt, HIGH);
-  } else if(touchpanel->isKeyPressed(TouchpanelKey::kKeyBluetooth)) {
-    Serial.println("Bluetooth");
-    portExpander->setPortPin(PortExpanderPin::kPinSelectBt, HIGH);
-  } else {
-    portExpander->setPortPin(PortExpanderPin::kPinLedAnalogExt, LOW);
-    portExpander->setPortPin(PortExpanderPin::kPinSelectBt, LOW);
+  if(change) {
+    change = false;
+    if (touchpanel->isKeyPressed(TouchpanelKey::kKeyPower)) {
+      Serial.println("Power");
+    } else if(touchpanel->isKeyPressed(TouchpanelKey::kKeyAnalogExt)) {
+      Serial.println("Analog Ext");
+      portExpander->setPortPin(PortExpanderPin::kPinSelectAnalog, HIGH);
+    } else if(touchpanel->isKeyPressed(TouchpanelKey::kKeyAnalogInt)) {
+      Serial.println("Analog Int");
+      portExpander->setPortPin(PortExpanderPin::kPinLedAnalogInt, HIGH);
+    } else if(touchpanel->isKeyPressed(TouchpanelKey::kKeyBluetooth)) {
+      Serial.println("Bluetooth");
+      portExpander->setPortPin(PortExpanderPin::kPinSelectBt, HIGH);
+    } else {
+      portExpander->setPortPin(PortExpanderPin::kPinLedAnalogExt, LOW);
+      portExpander->setPortPin(PortExpanderPin::kPinSelectBt, LOW);
+    }
   }
-  delay(100);
 }
