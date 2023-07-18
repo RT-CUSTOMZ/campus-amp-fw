@@ -30,17 +30,21 @@ void setup() {
 }
 
 void loop() {
-  static uint8_t state = LOW;
-  static PortExpanderPin pin = PortExpanderPin::kPinLedAnalogInt;
 
   if (touchpanel->isKeyPressed(TouchpanelKey::kKeyPower)) {
     Serial.println("Power");
   } else if(touchpanel->isKeyPressed(TouchpanelKey::kKeyAnalogExt)) {
     Serial.println("Analog Ext");
+    portExpander->setPortPin(PortExpanderPin::kPinSelectAnalog, HIGH);
   } else if(touchpanel->isKeyPressed(TouchpanelKey::kKeyAnalogInt)) {
     Serial.println("Analog Int");
+    portExpander->setPortPin(PortExpanderPin::kPinLedAnalogInt, HIGH);
   } else if(touchpanel->isKeyPressed(TouchpanelKey::kKeyBluetooth)) {
     Serial.println("Bluetooth");
+    portExpander->setPortPin(PortExpanderPin::kPinSelectBt, HIGH);
+  } else {
+    portExpander->setPortPin(PortExpanderPin::kPinLedAnalogExt, LOW);
+    portExpander->setPortPin(PortExpanderPin::kPinSelectBt, LOW);
   }
   delay(100);
 }
